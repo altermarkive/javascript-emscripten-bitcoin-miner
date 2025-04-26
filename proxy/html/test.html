@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+
+JavaScript Emscripten Bitcoin Miner
+
+An HTML document illustrating usage of the JavaScript Emscripten Bitcoin Miner.
+
+This code is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option)
+any later version.
+
+This code is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with code. If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<html>
+<head><meta charset="UTF-8"/><title>JavaScript Emscripten Bitcoin Miner</title></head>
+<body style="font-family:Arial;">
+<h2>JavaScript Emscripten Bitcoin Miner</h2>
+<p arign="justify">This demonstrates the use of the JavaScript Emscripten
+Bitcoin Miner. The miner is using Web Workers to run the processing.
+It does not detect number of CPU cores to optimize the use of resources.
+Along with that the parameters regarding the Bitcoin
+mining pool proxy are set.</p>
+<p arign="justify">The parameters are: host and port number of the pool
+as well as worker name and password.</p>
+<script type="text/javascript" src="/js/manager.js"></script>
+<script type="text/javascript">
+work({host:"api.bitcoin.cz", port:8332, user:"worker1", password:"password1"});
+</script>
+</body>
+</html>

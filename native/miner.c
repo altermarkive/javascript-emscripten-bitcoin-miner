@@ -355,6 +355,59 @@ int scanhash(
   }
 }
 
+void endian(uint32_t* data, uint8_t count){
+  for(uint8_t i = 0; i < count; i++){
+    data[i] = bswap_32(data[i]);
+  }
+}
+
+void sha256(char* text, char* hash){
+  uint8_t data[64];
+  uint8_t state[32];
+  uint32_t length = strlen(text) >> 1, index = 0;
+  memcpy(state, sha256_init_state, 32);
+  // Bulk of the string
+  for(uint32_t i = 0; i < length; i++){
+    hex2bin(data + index, ((unsigned char*)text) + 2 * i, 1);
+    index++;
+    if(index == 64){
+      endian((uint32_t*)data, 16);
+      sha256_transform((uint32_t*)state, data);
+      index = 0;
+    }
+  }
+  // Padding
+  if(index < 56){
+    data[index++] = 0x80;
+    while(index < 56){
+      data[index++] = 0x00;
+    }
+  }else{
+    data[index++] = 0x80;
+    while(index < 64){
+      data[index++] = 0x00;
+    }
+    endian((uint32_t*)data, 16);
+    sha256_transform((uint32_t*)state, data);
+    memset(data, 0, 56);
+  }
+  // Length
+  uint64_t bits = length * 8;
+  data[63] = 0xFF & (bits >> 0);
+  data[62] = 0xFF & (bits >> 8);
+  data[61] = 0xFF & (bits >> 16);
+  data[60] = 0xFF & (bits >> 24);
+  data[59] = 0xFF & (bits >> 32);
+  data[58] = 0xFF & (bits >> 40);
+  data[57] = 0xFF & (bits >> 48);
+  data[56] = 0xFF & (bits >> 56);
+  endian((uint32_t*)data, 16);
+  sha256_transform((uint32_t*)state, data);
+  // Digest
+  endian((uint32_t*)state, 8);
+  bin2hex(state, sizeof(state), (unsigned char*)hash);
+}
+
 volatile long unsigned int quit = 0;
 
 #ifdef STANDALONE

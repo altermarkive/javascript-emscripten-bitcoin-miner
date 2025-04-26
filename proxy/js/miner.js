@@ -2208,15 +2208,14 @@ function _runhash($state,$input,$init) {
  _sha256_transform($state,$input);
  return;
 }
-function _mine($hash1String,$dataString,$midstateString,$targetString,$minNonce,$maxNonce,$proof) {
+function _mine($hash1String,$dataString,$targetString,$minNonce,$maxNonce,$proof) {
  $hash1String = $hash1String|0;
  $dataString = $dataString|0;
- $midstateString = $midstateString|0;
  $targetString = $targetString|0;
  $minNonce = $minNonce|0;
  $maxNonce = $maxNonce|0;
  $proof = $proof|0;
- var $0 = 0, $1 = 0, $2 = 0, $3 = 0, $data = 0, $hash = 0, $hash1 = 0, $midstate = 0, $nonce = 0, $target = 0, dest = 0, label = 0, sp = 0, stop = 0;
+ var $0 = 0, $1 = 0, $2 = 0, $3 = 0, $data = 0, $hash = 0, $hash1 = 0, $midstate = 0, $nonce = 0, $target = 0, dest = 0, label = 0, sp = 0, src = 0, stop = 0;
  sp = STACKTOP;
  STACKTOP = STACKTOP + 304|0;
  $nonce = sp;
@@ -2227,8 +2226,9 @@ function _mine($hash1String,$dataString,$midstateString,$targetString,$minNonce,
  $hash = sp + 8|0;
  (_hex2bin($hash1,$hash1String,64)|0);
  (_hex2bin($data,$dataString,128)|0);
- (_hex2bin($midstate,$midstateString,32)|0);
  (_hex2bin($target,$targetString,32)|0);
+ dest=$midstate; src=8; stop=dest+32|0; do { HEAP8[dest>>0]=HEAP8[src>>0]|0; dest=dest+1|0; src=src+1|0; } while ((dest|0) < (stop|0));
+ _sha256_transform($midstate,$data);
  dest=$hash; stop=dest+32|0; do { HEAP8[dest>>0]=0|0; dest=dest+1|0; } while ((dest|0) < (stop|0));
  $0 = (_scanhash($midstate,$data,$hash1,$hash,$target,$minNonce,$maxNonce,$nonce,3268)|0);
  HEAP8[$proof>>0] = 0;

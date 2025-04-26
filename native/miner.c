@@ -354,19 +354,17 @@ void interrupt(int signal){
 }
 #endif
 
-
 #ifdef STANDALONE
 int main(int argc, char *argv[]){
   char proof_value[257];
   signal(SIGINT, interrupt);
   unsigned char* hash1String = (unsigned char*)argv[1];
   unsigned char* dataString = (unsigned char*)argv[2];
-  unsigned char* midstateString = (unsigned char*)argv[3];
-  unsigned char* targetString = (unsigned char*)argv[4];
+  unsigned char* targetString = (unsigned char*)argv[3];
   uint32_t minNonce = 0;
   uint32_t maxNonce = atol(argv[5]);
 #else
-int mine(char* hash1String, char* dataString, char* midstateString, char* targetString, uint32_t minNonce, uint32_t maxNonce, char* proof){
+int mine(char* hash1String, char* dataString, char* targetString, uint32_t minNonce, uint32_t maxNonce, char* proof){
 #endif
   uint32_t nonce;
   unsigned char hash1[64];
@@ -375,8 +373,9 @@ int mine(char* hash1String, char* dataString, char* midstateString, char* target
   unsigned char target[32];
   hex2bin(hash1, (unsigned char*)hash1String, sizeof(hash1));
   hex2bin(data, (unsigned char*)dataString, sizeof(data));
-  hex2bin(midstate, (unsigned char*)midstateString, sizeof(midstate));
   hex2bin(target, (unsigned char*)targetString, sizeof(target));
+  memcpy(midstate, sha256_init_state, 32);
+  sha256_transform((uint32_t*)midstate, data);
 
   unsigned char hash[32];
   memset(hash, 0, sizeof(hash));

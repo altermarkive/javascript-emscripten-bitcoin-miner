@@ -116,7 +116,7 @@ while True:
     # Remember the time when mining started
     before = time.time()
     # Start the native miner process
-    process = os.popen('./miner %s %s %s %s %u' % (work['result']['hash1'], work['result']['data'], work['result']['midstate'], work['result']['target'], maximum))
+    process = os.popen('./miner %s %s %s %s %u' % (work['result']['hash1'], work['result']['data'], work['result']['target'], maximum))
     # Read the response of the native miner process (it contains number of hashes processed and potentialy proof-of-work)
     output = process.read()
     # Remember the time when mining stopped

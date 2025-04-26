@@ -28,7 +28,7 @@ this.onmessage = function (event){
 importScripts("/js/miner.js");
 
 // Bind the functions compiled from C
-var mine = Module.cwrap("mine", "number", ["string", "string", "string", "string", "number", "number", "number"]);
+var mine = Module.cwrap("mine", "number", ["string", "string", "string", "number", "number", "number"]);
 
 // Handles the HTTP POST calls to the mining pool
 function httpPost(url, data){
@@ -85,12 +85,11 @@ function go(configuration){
           // This is a response to a request for a new job, get to it
           var hash1    = response["result"]["hash1"];
           var data     = response["result"]["data"];
-          var midstate = response["result"]["midstate"];
           var target   = response["result"]["target"];
           // Run the hashing loop
           var buffer = Module._malloc(257);
           var before = new Date().getTime();
-          var nonce = mine(hash1, data, midstate, target, 0, limit, buffer);
+          var nonce = mine(hash1, data, target, 0, limit, buffer);
           var after = new Date().getTime();
           proof = Pointer_stringify(buffer);
           found = proof.length == 0;

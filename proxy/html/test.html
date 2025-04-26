@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"/><title>JavaScript Emscripten Bitcoin Miner</title></head>
 <!--
 
 JavaScript Emscripten Bitcoin Miner
@@ -28,8 +30,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 -->
-<html>
-<head><meta charset="UTF-8"/><title>JavaScript Emscripten Bitcoin Miner</title></head>
 <body style="font-family:Arial;">
 <h2>JavaScript Emscripten Bitcoin Miner</h2>
 <p arign="justify">This demonstrates the use of the JavaScript Emscripten
@@ -39,9 +39,11 @@ Along with that the parameters regarding the Bitcoin
 mining pool proxy are set.</p>
 <p arign="justify">The parameters are: host and port number of the pool
 as well as worker name and password.</p>
+<script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
 <script type="text/javascript" src="/js/manager.js"></script>
 <script type="text/javascript">
-work({host:"api.bitcoin.cz", port:8332, user:"worker1", password:"password1"});
+var parameters = urlParseQuery(window.location.href);
+work({host:parameters["host"], port:parameters["port"], user:parameters["user"], password:parameters["password"]});
 </script>
 </body>
 </html>

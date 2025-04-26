@@ -33,14 +33,13 @@ Both parts (compiled hashing code & communication with a mining pool) are rolled
 [proxy/js/manager.js](proxy/js/manager.js)
 
 The script accepts following parameters: "host" and "port" number of the pool along with the "user" (worker name) and the "password" (worker password).
-Note: At the moment most of the mining pools moved to the Stratum protocol but I still found [one](http://mining.bitcoin.cz/) which uses the old GetWork API.
 
 JavaScript embedded in an HTML cannot connect to an arbitrary host.
 Therefore, if you do not have your own mining pool on the same host you will have to use a proxy.
 This project includes also a proxy which is implemented in Python and meant to run on Google AppEngine.
 
-[proxy/app.yaml](proxy/app.yaml)
+[proxy/Docker](proxy/Docker)
 
-[proxy/main.py](proxy/main.py)
+[proxy/bitcoin-mining-pool-proxy.py](proxy/bitcoin-mining-pool-proxy.py)
 
 Enjoy!

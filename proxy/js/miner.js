@@ -2208,40 +2208,133 @@ function _runhash($state,$input,$init) {
  _sha256_transform($state,$input);
  return;
 }
-function _mine($hash1String,$dataString,$targetString,$minNonce,$maxNonce,$proof) {
- $hash1String = $hash1String|0;
- $dataString = $dataString|0;
- $targetString = $targetString|0;
- $minNonce = $minNonce|0;
- $maxNonce = $maxNonce|0;
- $proof = $proof|0;
- var $0 = 0, $1 = 0, $2 = 0, $3 = 0, $data = 0, $hash = 0, $hash1 = 0, $midstate = 0, $nonce = 0, $target = 0, dest = 0, label = 0, sp = 0, src = 0, stop = 0;
+function _endian($data,$count) {
+ $data = $data|0;
+ $count = $count|0;
+ var $0 = 0, $1 = 0, $2 = 0, $3 = 0, $exitcond = 0, $indvars$iv = 0, $indvars$iv$next = 0, $lftr$wideiv = 0, label = 0, sp = 0;
  sp = STACKTOP;
- STACKTOP = STACKTOP + 304|0;
- $nonce = sp;
- $hash1 = sp + 232|0;
- $data = sp + 104|0;
- $midstate = sp + 72|0;
- $target = sp + 40|0;
- $hash = sp + 8|0;
- (_hex2bin($hash1,$hash1String,64)|0);
- (_hex2bin($data,$dataString,128)|0);
- (_hex2bin($target,$targetString,32)|0);
- dest=$midstate; src=8; stop=dest+32|0; do { HEAP8[dest>>0]=HEAP8[src>>0]|0; dest=dest+1|0; src=src+1|0; } while ((dest|0) < (stop|0));
- _sha256_transform($midstate,$data);
- dest=$hash; stop=dest+32|0; do { HEAP8[dest>>0]=0|0; dest=dest+1|0; } while ((dest|0) < (stop|0));
- $0 = (_scanhash($midstate,$data,$hash1,$hash,$target,$minNonce,$maxNonce,$nonce,3268)|0);
- HEAP8[$proof>>0] = 0;
- $1 = ((($proof)) + 256|0);
- HEAP8[$1>>0] = 0;
- $2 = ($0|0)==(0);
- if ($2) {
-  $3 = HEAP32[$nonce>>2]|0;
-  STACKTOP = sp;return ($3|0);
+ $0 = ($count<<24>>24)==(0);
+ if ($0) {
+  return;
+ } else {
+  $indvars$iv = 0;
  }
- _bin2hex($data,128,$proof);
- $3 = HEAP32[$nonce>>2]|0;
- STACKTOP = sp;return ($3|0);
+ while(1) {
+  $1 = (($data) + ($indvars$iv<<2)|0);
+  $2 = HEAP32[$1>>2]|0;
+  $3 = (_llvm_bswap_i32(($2|0))|0);
+  HEAP32[$1>>2] = $3;
+  $indvars$iv$next = (($indvars$iv) + 1)|0;
+  $lftr$wideiv = $indvars$iv$next&255;
+  $exitcond = ($lftr$wideiv<<24>>24)==($count<<24>>24);
+  if ($exitcond) {
+   break;
+  } else {
+   $indvars$iv = $indvars$iv$next;
+  }
+ }
+ return;
+}
+function _sha256($text,$hash) {
+ $text = $text|0;
+ $hash = $hash|0;
+ var $0 = 0, $1 = 0, $10 = 0, $11 = 0, $12 = 0, $13 = 0, $14 = 0, $15 = 0, $16 = 0, $17 = 0, $18 = 0, $19 = 0, $2 = 0, $20 = 0, $21 = 0, $22 = 0, $23 = 0, $24 = 0, $25 = 0, $26 = 0;
+ var $27 = 0, $28 = 0, $29 = 0, $3 = 0, $30 = 0, $31 = 0, $4 = 0, $5 = 0, $6 = 0, $7 = 0, $8 = 0, $9 = 0, $data = 0, $exitcond11 = 0, $i$05 = 0, $index$0$lcssa1314 = 0, $index$06 = 0, $index$1 = 0, $index$1$lcssa = 0, $scevgep = 0;
+ var $scevgep12 = 0, $state = 0, dest = 0, label = 0, sp = 0, src = 0, stop = 0;
+ sp = STACKTOP;
+ STACKTOP = STACKTOP + 96|0;
+ $data = sp + 32|0;
+ $state = sp;
+ $0 = (_strlen($text)|0);
+ $1 = $0 >>> 1;
+ dest=$state; src=8; stop=dest+32|0; do { HEAP8[dest>>0]=HEAP8[src>>0]|0; dest=dest+1|0; src=src+1|0; } while ((dest|0) < (stop|0));
+ $2 = ($1|0)==(0);
+ do {
+  if ($2) {
+   HEAP8[$data>>0] = -128;
+   $index$0$lcssa1314 = 0;
+   label = 12;
+  } else {
+   $3 = $0 >>> 1;
+   $i$05 = 0;$index$06 = 0;
+   while(1) {
+    $9 = (($data) + ($index$06)|0);
+    $10 = $i$05 << 1;
+    $11 = (($text) + ($10)|0);
+    (_hex2bin($9,$11,1)|0);
+    $12 = (($index$06) + 1)|0;
+    $13 = ($12|0)==(64);
+    if ($13) {
+     _endian($data,16);
+     _sha256_transform($state,$data);
+     $index$1 = 0;
+    } else {
+     $index$1 = $12;
+    }
+    $14 = (($i$05) + 1)|0;
+    $exitcond11 = ($14|0)==($3|0);
+    if ($exitcond11) {
+     $index$1$lcssa = $index$1;
+     break;
+    } else {
+     $i$05 = $14;$index$06 = $index$1;
+    }
+   }
+   $4 = ($index$1$lcssa>>>0)<(56);
+   $5 = (($index$1$lcssa) + 1)|0;
+   $6 = (($data) + ($index$1$lcssa)|0);
+   HEAP8[$6>>0] = -128;
+   if ($4) {
+    $8 = ($5>>>0)<(56);
+    if ($8) {
+     $index$0$lcssa1314 = $index$1$lcssa;
+     label = 12;
+     break;
+    } else {
+     break;
+    }
+   }
+   $7 = ($5>>>0)<(64);
+   if ($7) {
+    $15 = (($index$1$lcssa) + 1)|0;
+    $scevgep12 = (($data) + ($15)|0);
+    $16 = (63 - ($index$1$lcssa))|0;
+    _memset(($scevgep12|0),0,($16|0))|0;
+   }
+   _endian($data,16);
+   _sha256_transform($state,$data);
+   dest=$data; stop=dest+56|0; do { HEAP8[dest>>0]=0|0; dest=dest+1|0; } while ((dest|0) < (stop|0));
+  }
+ } while(0);
+ if ((label|0) == 12) {
+  $17 = (($index$0$lcssa1314) + 1)|0;
+  $scevgep = (($data) + ($17)|0);
+  $18 = (55 - ($index$0$lcssa1314))|0;
+  _memset(($scevgep|0),0,($18|0))|0;
+ }
+ $19 = $1 << 3;
+ $20 = $19&255;
+ $21 = ((($data)) + 63|0);
+ HEAP8[$21>>0] = $20;
+ $22 = $0 >>> 6;
+ $23 = $22&255;
+ $24 = ((($data)) + 62|0);
+ HEAP8[$24>>0] = $23;
+ $25 = $0 >>> 14;
+ $26 = $25&255;
+ $27 = ((($data)) + 61|0);
+ HEAP8[$27>>0] = $26;
+ $28 = $0 >>> 22;
+ $29 = $28&255;
+ $30 = ((($data)) + 60|0);
+ HEAP8[$30>>0] = $29;
+ $31 = ((($data)) + 56|0);
+ HEAP8[$31>>0]=0&255;HEAP8[$31+1>>0]=(0>>8)&255;HEAP8[$31+2>>0]=(0>>16)&255;HEAP8[$31+3>>0]=0>>24;
+ _endian($data,16);
+ _sha256_transform($state,$data);
+ _endian($state,8);
+ _bin2hex($state,32,$hash);
+ STACKTOP = sp;return;
 }
 function _sha256_transform($state,$input) {
  $state = $state|0;
@@ -3723,6 +3816,41 @@ function _sha256_transform($state,$input) {
  $1374 = (($1373) + ($1294))|0;
  HEAP32[$15>>2] = $1374;
  STACKTOP = sp;return;
+}
+function _mine($hash1String,$dataString,$targetString,$minNonce,$maxNonce,$proof) {
+ $hash1String = $hash1String|0;
+ $dataString = $dataString|0;
+ $targetString = $targetString|0;
+ $minNonce = $minNonce|0;
+ $maxNonce = $maxNonce|0;
+ $proof = $proof|0;
+ var $0 = 0, $1 = 0, $2 = 0, $3 = 0, $data = 0, $hash = 0, $hash1 = 0, $midstate = 0, $nonce = 0, $target = 0, dest = 0, label = 0, sp = 0, src = 0, stop = 0;
+ sp = STACKTOP;
+ STACKTOP = STACKTOP + 304|0;
+ $nonce = sp;
+ $hash1 = sp + 232|0;
+ $data = sp + 104|0;
+ $midstate = sp + 72|0;
+ $target = sp + 40|0;
+ $hash = sp + 8|0;
+ (_hex2bin($hash1,$hash1String,64)|0);
+ (_hex2bin($data,$dataString,128)|0);
+ (_hex2bin($target,$targetString,32)|0);
+ dest=$midstate; src=8; stop=dest+32|0; do { HEAP8[dest>>0]=HEAP8[src>>0]|0; dest=dest+1|0; src=src+1|0; } while ((dest|0) < (stop|0));
+ _sha256_transform($midstate,$data);
+ dest=$hash; stop=dest+32|0; do { HEAP8[dest>>0]=0|0; dest=dest+1|0; } while ((dest|0) < (stop|0));
+ $0 = (_scanhash($midstate,$data,$hash1,$hash,$target,$minNonce,$maxNonce,$nonce,3268)|0);
+ HEAP8[$proof>>0] = 0;
+ $1 = ((($proof)) + 256|0);
+ HEAP8[$1>>0] = 0;
+ $2 = ($0|0)==(0);
+ if ($2) {
+  $3 = HEAP32[$nonce>>2]|0;
+  STACKTOP = sp;return ($3|0);
+ }
+ _bin2hex($data,128,$proof);
+ $3 = HEAP32[$nonce>>2]|0;
+ STACKTOP = sp;return ($3|0);
 }
 function _LOAD_OP($I,$W,$input) {
  $I = $I|0;
@@ -16599,21 +16727,22 @@ var FUNCTION_TABLE_ii = [b0,___stdio_close];
 var FUNCTION_TABLE_iiii = [b1,___stdout_write,___stdio_seek,_sn_write,___stdio_write,_do_read,b1,b1];
 var FUNCTION_TABLE_vi = [b2,_cleanup_314];
 
-  return { _i64Subtract: _i64Subtract, _free: _free, _i64Add: _i64Add, _memset: _memset, _mine: _mine, _malloc: _malloc, _memcpy: _memcpy, _llvm_bswap_i32: _llvm_bswap_i32, _bitshift64Lshr: _bitshift64Lshr, _fflush: _fflush, ___errno_location: ___errno_location, _bitshift64Shl: _bitshift64Shl, runPostSets: runPostSets, stackAlloc: stackAlloc, stackSave: stackSave, stackRestore: stackRestore, establishStackSpace: establishStackSpace, setThrew: setThrew, setTempRet0: setTempRet0, getTempRet0: getTempRet0, dynCall_ii: dynCall_ii, dynCall_iiii: dynCall_iiii, dynCall_vi: dynCall_vi };
+  return { _i64Subtract: _i64Subtract, _fflush: _fflush, _i64Add: _i64Add, _memset: _memset, _mine: _mine, _malloc: _malloc, _sha256: _sha256, _memcpy: _memcpy, _llvm_bswap_i32: _llvm_bswap_i32, _bitshift64Lshr: _bitshift64Lshr, _free: _free, ___errno_location: ___errno_location, _bitshift64Shl: _bitshift64Shl, runPostSets: runPostSets, stackAlloc: stackAlloc, stackSave: stackSave, stackRestore: stackRestore, establishStackSpace: establishStackSpace, setThrew: setThrew, setTempRet0: setTempRet0, getTempRet0: getTempRet0, dynCall_ii: dynCall_ii, dynCall_iiii: dynCall_iiii, dynCall_vi: dynCall_vi };
 })
 // EMSCRIPTEN_END_ASM
 (Module.asmGlobalArg, Module.asmLibraryArg, buffer);
 var _i64Subtract = Module["_i64Subtract"] = asm["_i64Subtract"];
-var _free = Module["_free"] = asm["_free"];
+var _fflush = Module["_fflush"] = asm["_fflush"];
 var runPostSets = Module["runPostSets"] = asm["runPostSets"];
 var _i64Add = Module["_i64Add"] = asm["_i64Add"];
 var _memset = Module["_memset"] = asm["_memset"];
 var _mine = Module["_mine"] = asm["_mine"];
 var _malloc = Module["_malloc"] = asm["_malloc"];
+var _sha256 = Module["_sha256"] = asm["_sha256"];
 var _memcpy = Module["_memcpy"] = asm["_memcpy"];
 var ___errno_location = Module["___errno_location"] = asm["___errno_location"];
 var _bitshift64Lshr = Module["_bitshift64Lshr"] = asm["_bitshift64Lshr"];
-var _fflush = Module["_fflush"] = asm["_fflush"];
+var _free = Module["_free"] = asm["_free"];
 var _llvm_bswap_i32 = Module["_llvm_bswap_i32"] = asm["_llvm_bswap_i32"];
 var _bitshift64Shl = Module["_bitshift64Shl"] = asm["_bitshift64Shl"];
 var dynCall_ii = Module["dynCall_ii"] = asm["dynCall_ii"];

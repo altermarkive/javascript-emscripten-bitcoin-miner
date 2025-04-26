@@ -31,7 +31,7 @@
 ALL: js
 
 js:
-	emcc -O1 -s ASM_JS=1 miner.c -o miner.js -s EXPORTED_FUNCTIONS="['_mine']"
+	emcc -O1 -s ASM_JS=1 miner.c -o miner.js -s EXPORTED_FUNCTIONS="['_mine', '_sha256']"
 	mv miner.js ../proxy/js/
 
 app:

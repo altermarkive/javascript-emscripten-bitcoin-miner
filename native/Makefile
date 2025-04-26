@@ -22,7 +22,7 @@
 ALL: js
 
 js:
-	emcc -O1 -s ASM_JS=1 miner.c -o miner.js -s EXPORTED_FUNCTIONS="['_mine', '_proof', '_nonce']"
+	emcc -O1 -s ASM_JS=1 miner.c -o miner.js -s EXPORTED_FUNCTIONS="['_mine']"
 	mv miner.js ../proxy/js/
 
 app:

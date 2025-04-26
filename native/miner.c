@@ -34,7 +34,7 @@
 #define  bswap_32(value)                                           \
    (((uint32_t)bswap_16((uint16_t)((value) & 0xFFFF)) << 16) |     \
    (uint32_t)bswap_16((uint16_t)((value) >> 16)))
- 
+
 static inline void swap256(void* dest_p, const void* src_p){
   uint32_t* dest = (uint32_t*)dest_p;
   const uint32_t* src = (uint32_t*)src_p;
@@ -348,26 +348,16 @@ int scanhash(
 
 volatile long unsigned int quit = 0;
 
-static uint32_t nonce_last;
-static char proof_value[257];
-
 #ifdef STANDALONE
 void interrupt(int signal){
   quit = 1;
-}
-#else
-uint32_t nonce(){
-	return(nonce_last);
-}
-
-char* proof(){
-	return(proof_value);
 }
 #endif
 
 
 #ifdef STANDALONE
 int main(int argc, char *argv[]){
+  char proof_value[257];
   signal(SIGINT, interrupt);
   unsigned char* hash1String = (unsigned char*)argv[1];
   unsigned char* dataString = (unsigned char*)argv[2];
@@ -376,8 +366,9 @@ int main(int argc, char *argv[]){
   uint32_t minNonce = 0;
   uint32_t maxNonce = atol(argv[5]);
 #else
-int mine(char* hash1String, char* dataString, char* midstateString, char* targetString, uint32_t minNonce, uint32_t maxNonce){
+int mine(char* hash1String, char* dataString, char* midstateString, char* targetString, uint32_t minNonce, uint32_t maxNonce, char* proof){
 #endif
+  uint32_t nonce;
   unsigned char hash1[64];
   unsigned char data[128];
   unsigned char midstate[32];
@@ -394,20 +385,18 @@ int mine(char* hash1String, char* dataString, char* midstateString, char* target
   int ok = scanhash(
     midstate, data,
     hash1, hash, target,
-    minNonce, maxNonce, &nonce_last, &quit
+    minNonce, maxNonce, &nonce, &quit
   );
 
   // Report the result
-  proof_value[0] = 0;
-  proof_value[2 * sizeof(data)] = 0;
+  proof[0] = 0;
+  proof[2 * sizeof(data)] = 0;
   if(ok){
-    bin2hex(data, sizeof(data), (unsigned char*)proof_value);
+    bin2hex(data, sizeof(data), (unsigned char*)proof);
   }
-  
+
 #ifdef STANDALONE
-  printf("%s,%u\n", proof_value, nonce_last);
-  return(0);
-#else
-  return(ok);
+  printf("%s,%u\n", proof, nonce);
 #endif
+  return(nonce);
 }

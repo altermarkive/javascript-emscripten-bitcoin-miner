@@ -28,9 +28,7 @@ this.onmessage = function (event){
 importScripts("/js/miner.js");
 
 // Bind the functions compiled from C
-var mine = Module.cwrap('mine', 'number', ['string', 'string', 'string', 'string', 'number', 'number']);
-var proof = Module.cwrap('proof', 'string', []);
-var nonce = Module.cwrap('nonce', 'number', []);
+var mine = Module.cwrap("mine", "number", ["string", "string", "string", "string", "number", "number", "number"]);
 
 // Handles the HTTP POST calls to the mining pool
 function httpPost(url, data){
@@ -58,12 +56,13 @@ function go(configuration){
   var limit = 100000;
   // Have we found a proof of work?
   var found = false;
+  var proof = "";
   // Main loop running work requests and working
   while(true){
     var request;
     // Include proof-of-work if found
     if(found){
-      request = {method:"getwork", id:0, params:[proof()]};
+      request = {method:"getwork", id:0, params:[proof]};
     }else{
       request = nothing;
     }
@@ -89,11 +88,15 @@ function go(configuration){
           var midstate = response["result"]["midstate"];
           var target   = response["result"]["target"];
           // Run the hashing loop
+          var buffer = Module._malloc(257);
           var before = new Date().getTime();
-          found = mine(hash1, data, midstate, target, 0, limit) != 0;
+          var nonce = mine(hash1, data, midstate, target, 0, limit, buffer);
           var after = new Date().getTime();
+          proof = Pointer_stringify(buffer);
+          found = proof.length == 0;
+          Module._free(buffer);
           // Calculate hashing speed in [khash/s]
-          limit = (nonce() + 1.0) / (after - before);
+          limit = (nonce + 1.0) / (after - before);
           console.log("Speed [khash/s]: " + limit);
           // Set the number of nonces to check to work maximum 3 [s]
           limit = Math.round(limit * 5000);
